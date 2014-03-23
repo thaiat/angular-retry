@@ -1,0 +1,12 @@
+{
+	"name": "angular-retry",
+	"version": "1.0.0",
+	"authors": [
+		"Avi Haiat <thaiat@ipelia.com>"
+	],
+	"license": "MIT",
+	"dependencies": {
+		"angular": "~1.2.15",
+		"angular-mocks": "~1.2.15"
+	}
+}
