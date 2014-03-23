@@ -12,3 +12,35 @@ Often, these actions fail by throwing an exception which makes the process of tr
 The full post is available at : http://thaiat.github.io/blog/2014/03/23/automatic-retry-on-exception-in-angular/
 
 
+##Usage
+The service exposes 3 functions
+
+###sleep
+Equivalent to the .net `Thread.Sleep`.
+####Usage:
+```
+promiseService.sleep(100).then(...); // sleep for 100 ms
+```
+
+###toAsync
+Converts a function either sync or async to a promise
+####Usage:
+```javascript
+var fn = function() {
+	return "Hello World";
+};
+promiseService.toAsync(fn).then(...);
+```
+
+###retry
+Retry on fail either a sync or async function.
+####Usage:
+```javascript
+var options = {
+	 maxRetry : 3, // number of times to retry on fail
+     interval : 500, // interval between retries
+     intervalMultiplicator : 1.5 // extend the interval between retries
+} 
+promiseService.retry(fn, options); // options is optional
+```
+
