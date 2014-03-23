@@ -41,6 +41,6 @@ var options = {
      interval : 500, // interval between retries
      intervalMultiplicator : 1.5 // extend the interval between retries
 } 
-promiseService.retry(fn, options); // options is optional
+promiseService.retry(fn, options).then(...); // options is optional
 ```
 
