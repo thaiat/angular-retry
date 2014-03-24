@@ -15,6 +15,19 @@ describe("Service : promiseService", function () {
 
 	}));
 
+	beforeEach(function () {
+		jasmine.clock().install();
+	});
+
+	var tickClock = function () {
+		jasmine.clock().tick(50000);
+		$rootScope.$apply();
+	};
+
+	afterEach(function () {
+		jasmine.clock().uninstall();
+	});
+
 	it("should_be_defined", function () {
 		expect(service).toBeDefined();
 	});
@@ -32,13 +45,13 @@ describe("Service : promiseService", function () {
 		$rootScope.$apply();
 	});
 
-	it("sleep_with_positive_integer_interval_should_succeed", function (done) {
+	it("sleep_with_positive_integer_interval_should_succeed", function () {
 		var interval = 100;
 		service.sleep(interval).then(function (result) {
 			expect(result).toEqual(interval);
-			done();
+
 		});
-		$rootScope.$apply();
+		tickClock();
 	});
 
 	it("toAsync_with_invalid_parameter_function_should_throw_exception", function () {
@@ -47,7 +60,7 @@ describe("Service : promiseService", function () {
 		}).toThrow(new Error("action must be a function"));
 	});
 
-	it("toAsync_with_valid_sync_function_should_succeed", function (done) {
+	it("toAsync_with_valid_sync_function_should_succeed", function () {
 		spyOn(mockHelper, 'addOne').and.callThrough();
 		var action = function () {
 			return mockHelper.addOne(100);
@@ -56,12 +69,12 @@ describe("Service : promiseService", function () {
 		service.toAsync(action).then(function (result) {
 			expect(result).toBe(101);
 			expect(mockHelper.addOne).toHaveBeenCalledWith(100);
-			done();
+
 		});
-		$rootScope.$apply();
+		tickClock();
 	});
 
-	it("toAsync_with_valid_async_function_should_succeed", function (done) {
+	it("toAsync_with_valid_async_function_should_succeed", function () {
 		spyOn(mockHelper, 'getUrl').and.callThrough();
 		$httpBackend.when('GET', '/dummy').respond(mockHelper.dummyResponse);
 		var action = function () {
@@ -70,14 +83,14 @@ describe("Service : promiseService", function () {
 		service.toAsync(action).then(function (result) {
 			expect(mockHelper.getUrl).toHaveBeenCalled();
 			expect(result.data).toEqual(mockHelper.dummyResponse);
-			done();
+
 		});
 
 		$httpBackend.flush();
-		$rootScope.$apply();
+		tickClock();
 	});
 
-	it("toAsync_with_faulty_sync_function_should_succeed", function (done) {
+	it("toAsync_with_faulty_sync_function_should_succeed", function () {
 		spyOn(mockHelper, 'faultyFn').and.callThrough();
 		var action = function () {
 			return mockHelper.faultyFn();
@@ -85,9 +98,9 @@ describe("Service : promiseService", function () {
 		service.toAsync(action).then(null, function (rejection) {
 			expect(mockHelper.faultyFn).toHaveBeenCalled();
 			expect(rejection.message).toBe("I'm a faulty function");
-			done();
+
 		});
-		$rootScope.$apply();
+		tickClock();
 	});
 
 	it("retry_with_invalid_parameter_function_should_throw_exception", function () {
@@ -97,7 +110,7 @@ describe("Service : promiseService", function () {
 
 	});
 
-	it("retry_with_faulty_sync_function_should_succeed", function (done) {
+	it("retry_with_faulty_sync_function_should_succeed", function () {
 		spyOn(mockHelper, 'faultyFn').and.callThrough();
 		var action = function () {
 			return mockHelper.faultyFn();
@@ -107,13 +120,13 @@ describe("Service : promiseService", function () {
 			expect(mockHelper.faultyFn).toHaveBeenCalled();
 			expect(mockHelper.faultyFn.calls.count()).toBe(3);
 			expect(rejection.message).toBe("I'm a faulty function");
-			done();
+
 		});
-		$rootScope.$apply();
+		tickClock();
 
 	});
 
-	it("retry_with_faulty_sync_function_and_options_should_succeed", function (done) {
+	it("retry_with_faulty_sync_function_and_options_should_succeed", function () {
 		spyOn(mockHelper, 'faultyFn').and.callThrough();
 		var action = function () {
 			return mockHelper.faultyFn();
@@ -126,13 +139,13 @@ describe("Service : promiseService", function () {
 			expect(mockHelper.faultyFn).toHaveBeenCalled();
 			expect(mockHelper.faultyFn.calls.count()).toBe(5);
 			expect(rejection.message).toBe("I'm a faulty function");
-			done();
+
 		});
-		$rootScope.$apply();
+		tickClock();
 
 	});
 
-	it("retry_with_valid_sync_function_should_succeed", function (done) {
+	it("retry_with_valid_sync_function_should_succeed", function () {
 		spyOn(mockHelper, 'addOne').and.callThrough();
 		var action = function () {
 			return mockHelper.addOne(100);
@@ -142,12 +155,12 @@ describe("Service : promiseService", function () {
 			expect(result).toBe(101);
 			expect(mockHelper.addOne).toHaveBeenCalled();
 			expect(mockHelper.addOne.calls.count()).toBe(1);
-			done();
+
 		});
-		$rootScope.$apply();
+		tickClock();
 	});
 
-	it("retry_with_valid_async_function_should_succeed", function (done) {
+	it("retry_with_valid_async_function_should_succeed", function () {
 		spyOn(mockHelper, 'getUrl').and.callThrough();
 		$httpBackend.when('GET', '/dummy').respond(mockHelper.dummyResponse);
 		var action = function () {
@@ -157,10 +170,10 @@ describe("Service : promiseService", function () {
 		promise.then(function (result) {
 			expect(mockHelper.getUrl).toHaveBeenCalled();
 			expect(result.data).toEqual(mockHelper.dummyResponse);
-			done();
+
 		});
 		$httpBackend.flush();
-		$rootScope.$apply();
+		tickClock();
 	});
 	var mockHelper = {
 		faultyFn: function () {
